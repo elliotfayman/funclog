@@ -11,7 +11,9 @@ object Tokenizer {
     "call" -> CallToken,
     "block" -> BlockToken,
     "def" -> FuncDefToken,
-    "var" -> VarDefToken
+    "var" -> VarDefToken,
+    "int" -> IntTypeToken,
+    "bool" -> BooleanTypeToken
   )
 
   def tokenize(source: String): List[Token] = {

@@ -31,6 +31,8 @@ case object CallToken extends Token
 case object BlockToken extends Token
 case object FuncDefToken extends Token
 case object VarDefToken extends Token
+case object IntTypeToken extends Token
+case object BooleanTypeToken extends Token
 
 // Tokenization Exception
 class TokenizationException(message: String) extends Exception(message)
