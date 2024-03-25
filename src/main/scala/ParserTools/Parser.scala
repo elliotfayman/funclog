@@ -15,7 +15,6 @@ case class TokenReader(tokens: Seq[Token]) extends Reader[Token] {
 object Parser extends Parsers {
   override type Elem = Token
 
-  // Assuming PlusToken represents the '+' operation
   def op: Parser[OperatorNode] = (
     accept("plus token", { case PlusToken => PlusOperatorNode }) |
     accept("minus token", { case MinusToken => MinusOperatorNode }) |
@@ -42,7 +41,6 @@ object Parser extends Parsers {
       case typeParams => typeParams
     }
 
-  // Parser for integer tokens
   def intExpNode: Parser[IntExpNode] = acceptMatch("integer token", { case IntToken(value) => IntExpNode(value)})
 
   def varExpNode: Parser[VarExpNode] = acceptMatch("identfier token", { case IdentifierToken(name) => VarExpNode(Var(name))})
@@ -52,10 +50,8 @@ object Parser extends Parsers {
   def falseExpNode: Parser[FalseExpNode.type] = accept("false token", { case FalseToken => FalseExpNode})
 
 
-  // Recursive parser for expressions
   def exp: Parser[ExpNode] = intExpNode | opExp | varExpNode | trueExpNode | falseExpNode 
 
-  // Parser for a simple expression like `(+ 1 2)` or nested expressions like `(+ 1 (+ 1 2))`
   def opExp: Parser[OpExpNode] = LeftParenToken ~> op ~ exp ~ exp <~ RightParenToken ^^ {
     case op ~ e1 ~ e2 => OpExpNode(op, e1, e2)
   }
