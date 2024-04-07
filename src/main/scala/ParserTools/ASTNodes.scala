@@ -1,6 +1,16 @@
 package ParserTools
 
-sealed trait Node
+import java.util.concurrent.atomic.AtomicLong
+
+object UniqueIdGenerator {
+  private val currentId = new AtomicLong(0)
+  def nextId(): Long = currentId.getAndIncrement()
+}
+
+
+sealed trait Node {
+    val id: Long = UniqueIdGenerator.nextId()
+}
 
 //Type Nodes
 sealed trait TypeNode extends Node
@@ -24,7 +34,8 @@ case class IntExpNode(value: Int) extends ExpNode
 case object TrueExpNode extends ExpNode
 case object FalseExpNode extends ExpNode
 case class OpExpNode(op: OperatorNode, e1: ExpNode, e2: ExpNode) extends ExpNode
-//case class FuncExpNode(params: List[ExpNode], stmt: StmtNode) extends ExpNode
+case class CallExpNode(vr: Var, params: List[ExpNode]) extends ExpNode
+case class FuncExpNode(params: List[(TypeNode, Var)], stmt: StmtNode) extends ExpNode
 
 sealed trait StmtNode extends Node
 case class VarDefStmtNode(t: TypeNode, vr: Var, value: ExpNode) extends StmtNode
@@ -32,7 +43,6 @@ case class AssertStmtNode(cond: ExpNode) extends StmtNode
 case class ReturnStmtNode(value: ExpNode) extends StmtNode
 case class BlockStmtNode(stmts: List[StmtNode]) extends StmtNode
 case class ChoiceStmtNode(c1: StmtNode, c2: StmtNode) extends StmtNode
-case class CallStmtNode(vr: Var, params: List[ExpNode]) extends StmtNode
 
 case class Var(name: String)
 

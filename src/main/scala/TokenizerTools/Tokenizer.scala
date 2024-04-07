@@ -13,7 +13,9 @@ object Tokenizer {
     "def" -> FuncDefToken,
     "var" -> VarDefToken,
     "int" -> IntTypeToken,
-    "bool" -> BooleanTypeToken
+    "bool" -> BooleanTypeToken,
+    "true" -> TrueToken,
+    "false" ->FalseToken
   )
 
   def tokenize(source: String): List[Token] = {

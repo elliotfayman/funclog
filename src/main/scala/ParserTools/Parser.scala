@@ -49,14 +49,21 @@ object Parser extends Parsers {
   
   def falseExpNode: Parser[FalseExpNode.type] = accept("false token", { case FalseToken => FalseExpNode})
 
-
-  def exp: Parser[ExpNode] = intExpNode | opExp | varExpNode | trueExpNode | falseExpNode 
+  def exp: Parser[ExpNode] = intExpNode | opExp | varExpNode | trueExpNode | falseExpNode | callExpNode | funcExpNode
 
   def opExp: Parser[OpExpNode] = LeftParenToken ~> op ~ exp ~ exp <~ RightParenToken ^^ {
     case op ~ e1 ~ e2 => OpExpNode(op, e1, e2)
   }
 
-  def stmt: Parser[StmtNode] = vardef | assert | retn | blockStmt | choiceStmt | callStmt
+  def callExpNode: Parser[CallExpNode] = LeftParenToken ~> CallToken ~> varDefName ~ rep(exp) <~ RightParenToken ^^ {
+    case varName ~ params => CallExpNode(varName, params)
+  }
+
+  def funcExpNode: Parser[FuncExpNode] = (LeftParenToken ~> paramsList ~ stmt <~ RightParenToken) ^^ {
+      case params ~ body => FuncExpNode(params, body)
+    }
+
+  def stmt: Parser[StmtNode] = vardef | assert | retn | blockStmt | choiceStmt
   
   def varDefName: Parser[Var] = acceptMatch("identifier token", { case IdentifierToken(name) => Var(name)})
 
@@ -73,10 +80,6 @@ object Parser extends Parsers {
 
   def choiceStmt: Parser[ChoiceStmtNode] = LeftParenToken ~> ChoiceToken ~> stmt ~ stmt <~ RightParenToken ^^ {
     case stmt1 ~ stmt2 => ChoiceStmtNode(stmt1, stmt2)
-  }
-  
-  def callStmt: Parser[CallStmtNode] = LeftParenToken ~> CallToken ~> varDefName ~ rep(exp) <~ RightParenToken ^^ {
-    case varName ~ params => CallStmtNode(varName, params)
   }
 
   def funcDef: Parser[FuncDefNode] = 
