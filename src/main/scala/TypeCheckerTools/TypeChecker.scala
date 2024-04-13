@@ -5,7 +5,7 @@ import ParserTools._
 
 
 object TypeChecker {
-    
+
     def typeCheck(prgrm: ProgramNode): Unit = prgrm match {
         case ProgramNode(lst: List[FuncDefNode])=> typeCheckProgram(lst, Map.empty[Var, Type])
     }
@@ -80,6 +80,9 @@ object TypeChecker {
         }
 
         case BlockStmtNode(lst: List[StmtNode]) => {
+            // val (rtn: Option[Type], _) = lst.foldLeft(env)((accum, cur)) => {
+            //     typeCheck(cur, accum)
+            // }
             val (rtn: Type, _) = typeCheckListOfStmt(lst, env, None)
             (Some(rtn), env)
         }
@@ -115,7 +118,6 @@ object TypeChecker {
             typeCheckProgram(fncs.tail, env)
         }
     }
-
 
     def typeCheckListOfStmt(lst: List[StmtNode], env: Map[Var, Type], rtn: Option[Type]): (Type, Map[Var, Type]) = {
         if (lst.isEmpty) {

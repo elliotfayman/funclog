@@ -49,3 +49,4 @@ case class Var(name: String)
 case class FuncDefNode(name: String, params: List[(TypeNode, Var)], rtntype: TypeNode, stmt: StmtNode) extends Node
 
 case class ProgramNode(fncs: List[FuncDefNode]) extends Node
+

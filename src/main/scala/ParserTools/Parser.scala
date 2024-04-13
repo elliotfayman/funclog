@@ -55,11 +55,11 @@ object Parser extends Parsers {
     case op ~ e1 ~ e2 => OpExpNode(op, e1, e2)
   }
 
-  def callExpNode: Parser[CallExpNode] = LeftParenToken ~> CallToken ~> varDefName ~ rep(exp) <~ RightParenToken ^^ {
+  def callExpNode: Parser[CallExpNode] = (LeftParenToken ~> CallToken ~> varDefName) ~ (LeftParenToken ~> rep(exp) <~ RightParenToken) <~ RightParenToken ^^ {
     case varName ~ params => CallExpNode(varName, params)
   }
 
-  def funcExpNode: Parser[FuncExpNode] = (LeftParenToken ~> paramsList ~ stmt <~ RightParenToken) ^^ {
+  def funcExpNode: Parser[FuncExpNode] = (LeftParenToken ~> ArrowToken ~> paramsList ~ stmt <~ RightParenToken) ^^ {
       case params ~ body => FuncExpNode(params, body)
     }
 
@@ -76,11 +76,11 @@ object Parser extends Parsers {
 
   def retn: Parser[ReturnStmtNode] = LeftParenToken ~> ReturnToken ~> exp <~ RightParenToken ^^ ReturnStmtNode.apply
 
-  def blockStmt: Parser[BlockStmtNode] = LeftParenToken ~> BlockToken ~> rep(stmt) <~ RightParenToken ^^ BlockStmtNode.apply
-
   def choiceStmt: Parser[ChoiceStmtNode] = LeftParenToken ~> ChoiceToken ~> stmt ~ stmt <~ RightParenToken ^^ {
     case stmt1 ~ stmt2 => ChoiceStmtNode(stmt1, stmt2)
   }
+
+  def blockStmt: Parser[BlockStmtNode] = LeftParenToken ~> BlockToken ~> rep1(stmt) <~ RightParenToken ^^ BlockStmtNode.apply
 
   def funcDef: Parser[FuncDefNode] = 
     (LeftParenToken ~> FuncDefToken ~> varDefName ~ paramsList ~ types ~ stmt <~ RightParenToken) ^^ {
@@ -93,5 +93,5 @@ object Parser extends Parsers {
       case tpe ~ vr => (tpe, vr)
     }
 
-  def prgrm: Parser[ProgramNode] = rep(funcDef) ^^ ProgramNode.apply
+  def prgrm: Parser[ProgramNode] = rep1(funcDef) ^^ ProgramNode.apply
 }

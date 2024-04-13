@@ -1,0 +1,9 @@
+(def f1 (int x) (=> () int) (return (=> () (return x))))
+f1(X, RTN) :-
+    RTN = lambda(X).
+    
+f2(X, RTN) :-
+    f1(X, V),
+    call_func(V, X, RTN).
+
+call_func(lambda(X), Y, )

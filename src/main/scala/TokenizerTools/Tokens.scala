@@ -36,3 +36,4 @@ case object BooleanTypeToken extends Token
 
 // Tokenization Exception
 class TokenizationException(message: String) extends Exception(message)
+

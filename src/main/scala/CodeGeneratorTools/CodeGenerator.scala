@@ -28,26 +28,35 @@ object CodeGenerator {
         case FuncExpNode(params, stmt) => ""
     }
 
-    def codeGenStmt(stmt: StmtNode, rtrnStr: String): String = stmt match {
-        case VarDefStmtNode(_, vr, value) => {
+    def codeGenStmt(stmt: StmtNode, rtrnStr: String, currList: List[String] = List("")): List[String] = stmt match {
+        case VarDefStmtNode(_, vr, value) =>
             val expStr: String = codeGenExp(value)
-            varConversion(vr) + " is " + expStr
+            currList.map(cl => cl + varConversion(vr) + " is " + expStr + "\n")
+
+        case AssertStmtNode(cond) =>
+            currList.map(cl => cl + codeGenExp(cond) + "\n")
+
+        case ReturnStmtNode(value) =>
+            currList.map(cl => cl + rtrnStr + " is " + codeGenExp(value) + "\n")
+
+        case BlockStmtNode(stmts) =>
+            stmts.foldLeft(currList) { (acc, s) => codeGenStmt(s, rtrnStr, acc) }
+
+        case ChoiceStmtNode(c1, c2) =>
+            val list1 = codeGenStmt(c1, rtrnStr, currList)
+            val list2 = codeGenStmt(c2, rtrnStr, currList)
+            list1 ++ list2 // Concatenate the results from each choice path
         }
-        case AssertStmtNode(cond) => codeGenExp(cond)
-        case ReturnStmtNode(value) => {
-            rtrnStr + " is " + codeGenExp(value)
-        }
-        case BlockStmtNode(stmts) => ""
-        case ChoiceStmtNode(c1, c2) => ""
-    }
     
     def codeGenFuncDef(fnc: FuncDefNode): String = fnc match {
         case FuncDefNode(name, params, _, stmt) => {
-            val funcName = "func" + name + "(" + params.map { case (_, vr) => varConversion(vr) }.mkString(", ") + ", "
+            val funcName = "func" + "_" + name + "(" + params.map { case (_, vr) => varConversion(vr) }.mkString(", ") + ", "
             val rtrnStr = "RtnV" + fnc.id.toString
             val stmtString = codeGenStmt(stmt, rtrnStr)
-        
-            s"$funcName$rtrnStr) :- $stmtString."
+            
+            val prog = stmtString.foldLeft("")((accum, stmts) => s"$funcName$rtrnStr) :-\n$stmts.\n\n")
+            
+            prog    
         }
     }
 
