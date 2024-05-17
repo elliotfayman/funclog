@@ -4,7 +4,7 @@ package ParserTools
 
 import TokenizerTools._
 
-class TokenizerTests extends munit.FunSuite {
+class ParserTests extends munit.FunSuite {
     test("Testing Generation of function with int return") {
         val tokens = List(LeftParenToken, FuncDefToken, IdentifierToken("func"), LeftParenToken, RightParenToken, IntTypeToken, LeftParenToken, ReturnToken, IntToken(1), RightParenToken, RightParenToken)
         val reader = TokenReader(tokens)
