@@ -1,0 +1,1 @@
+(def f (int X) int (choice (block (var ( =>  (int) int) Z ( =>  (int Inner) (return Inner))) (var (=> ((=> (int) int)) int) Y ( => (( =>  (int) int) Func) (return (call Func (5) ) ) ) ) (return (call Y (Z)))) (return X)))
